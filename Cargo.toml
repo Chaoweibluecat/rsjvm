@@ -1,0 +1,25 @@
+[package]
+name = "rsjvm"
+version = "0.1.0"
+edition = "2021"
+authors = ["Travis Wang"]
+
+[dependencies]
+# 用于字节码解析
+byteorder = "1.5"
+# 错误处理
+anyhow = "1.0"
+thiserror = "1.0"
+# 日志
+log = "0.4"
+env_logger = "0.11"
+# 命令行参数
+clap = { version = "4.5", features = ["derive"] }
+
+[dev-dependencies]
+# 测试
+assert_matches = "1.5"
+
+[[bin]]
+name = "rsjvm"
+path = "src/main.rs"

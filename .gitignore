@@ -1,0 +1,28 @@
+# Rust
+/target
+Cargo.lock
+**/*.rs.bk
+*.pdb
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Examples
+examples/**/*.class
+
+# Test artifacts
+tests/**/*.class
+
+# OS
+.DS_Store
+Thumbs.db
