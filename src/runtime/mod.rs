@@ -15,7 +15,9 @@
 pub mod frame;
 pub mod heap;
 pub mod thread;
+pub mod metaspace;
 
 pub use frame::Frame;
 pub use heap::Heap;
 pub use thread::JvmThread;
+pub use metaspace::{Metaspace, ClassMetadata, MethodMetadata, FieldMetadata, ResolvedMethodRef};

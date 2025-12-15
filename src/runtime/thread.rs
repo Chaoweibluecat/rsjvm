@@ -16,12 +16,19 @@ use anyhow::anyhow;
 pub struct JvmThread {
     /// 虚拟机栈（栈帧列表）
     stack: Vec<Frame>,
+
+    /// 程序计数器 (PC Register) - 线程级别
+    /// 指向当前正在执行的字节码指令地址
+    pub pc: usize,
 }
 
 impl JvmThread {
     /// 创建新线程
     pub fn new() -> Self {
-        JvmThread { stack: Vec::new() }
+        JvmThread {
+            stack: Vec::new(),
+            pc: 0,
+        }
     }
 
     /// 压入新的栈帧
@@ -51,6 +58,11 @@ impl JvmThread {
     /// 获取栈深度
     pub fn stack_depth(&self) -> usize {
         self.stack.len()
+    }
+
+    /// 获取当前方法的字节码
+    pub fn current_code(&self) -> Result<&[u8]> {
+        Ok(&self.current_frame()?.code)
     }
 }
 

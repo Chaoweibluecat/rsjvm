@@ -10,8 +10,9 @@
 //! ## 简化设计
 //! 这个实现使用简单的向量来模拟堆，实际JVM的堆管理要复杂得多
 
+use crate::runtime::frame::JvmValue;
 use crate::Result;
-use anyhow::anyhow;
+use anyhow::{anyhow, Ok};
 use std::collections::HashMap;
 
 /// 对象实例
@@ -58,6 +59,19 @@ impl Heap {
             self.objects.push(Some(obj));
             index
         }
+    }
+
+    pub fn set_field(&mut self, index: usize, name: String, value: JvmValue) -> Result<()> {
+        self.get_mut(index)?.fields.insert(name, value);
+        Ok(())
+    }
+
+    pub fn get_field(&self, index: usize, name: &String) -> Result<JvmValue> {
+        self.get(index)?
+            .fields
+            .get(name)
+            .ok_or(anyhow!("Field not found"))
+            .map(|v| v.clone())
     }
 
     /// 获取对象

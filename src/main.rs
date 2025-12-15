@@ -46,27 +46,35 @@ enum Commands {
     /// 显示版本信息
     Version,
 }
-
 fn main() -> Result<()> {
-    env_logger::init();
-
-    let cli = Cli::parse();
-
-    match cli.command {
-        Commands::Parse { file, verbose } => {
-            parse_class_file(&file, verbose)?;
-        }
-        Commands::Run { file, method, args } => {
-            run_class_file(&file, method.as_deref(), args)?;
-        }
-        Commands::Version => {
-            println!("RSJVM version {}", env!("CARGO_PKG_VERSION"));
-            println!("一个用于学习JVM原理的Rust实现");
-        }
-    }
-
+    run_class_file(
+        &PathBuf::from("examples/MainTest.class"),
+        Some("main"),
+        vec![],
+    )?;
     Ok(())
+    // parse_class_file(&PathBuf::from("examples/HelloPrintln.class"), true)
 }
+// fn main() -> Result<()> {
+//     env_logger::init();
+
+//     let cli = Cli::parse();
+
+//     match cli.command {
+//         Commands::Parse { file, verbose } => {
+//             parse_class_file(&file, verbose)?;
+//         }
+//         Commands::Run { file, method, args } => {
+//             run_class_file(&file, method.as_deref(), args)?;
+//         }
+//         Commands::Version => {
+//             println!("RSJVM version {}", env!("CARGO_PKG_VERSION"));
+//             println!("一个用于学习JVM原理的Rust实现");
+//         }
+//     }
+
+//     Ok(())
+// }
 
 /// 解析并显示class文件信息
 fn parse_class_file(path: &PathBuf, verbose: bool) -> Result<()> {
@@ -248,7 +256,11 @@ fn run_class_file(path: &PathBuf, method_name: Option<&str>, args: Vec<String>) 
     println!("\n=== 开始执行 ===");
     let mut interpreter = Interpreter::new();
 
-    match interpreter.execute_method(
+    // 加载类到 Metaspace（转移所有权）
+    let class_name_owned = interpreter.load_class(class_file)?;
+
+    match interpreter.execute_method_with_class(
+        &class_name_owned,
         &code.code,
         code.max_locals as usize,
         code.max_stack as usize,

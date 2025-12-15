@@ -32,8 +32,22 @@ pub struct Frame {
     local_vars: Vec<JvmValue>,
     /// 操作数栈
     operand_stack: Vec<JvmValue>,
-    /// 程序计数器（当前指令位置）
-    pub pc: usize,
+
+    /// 动态链接 - 指向当前方法所属类的名称
+    /// 用于解析符号引用
+    pub class_name: String,
+
+    /// 返回地址 - 方法正常返回后的指令位置（在调用者中的PC）
+    pub return_address: Option<usize>,
+
+    /// 当前方法的字节码
+    /// 注意：这里使用 Vec 而不是引用，简化生命周期管理
+    pub code: Vec<u8>,
+
+    /// 操作数栈最大深度（用于调试）
+    pub max_stack: usize,
+    /// 局部变量表大小（用于调试）
+    pub max_locals: usize,
 }
 
 impl Frame {
@@ -42,7 +56,30 @@ impl Frame {
         Frame {
             local_vars: vec![JvmValue::Int(0); max_locals],
             operand_stack: Vec::with_capacity(max_stack),
-            pc: 0,
+            class_name: String::new(),  // 稍后设置
+            return_address: None,
+            code: Vec::new(),  // 稍后设置
+            max_stack,
+            max_locals,
+        }
+    }
+
+    /// 创建带完整信息的栈帧
+    pub fn new_with_context(
+        max_locals: usize,
+        max_stack: usize,
+        class_name: String,
+        code: Vec<u8>,
+        return_address: Option<usize>,
+    ) -> Self {
+        Frame {
+            local_vars: vec![JvmValue::Int(0); max_locals],
+            operand_stack: Vec::with_capacity(max_stack),
+            class_name,
+            return_address,
+            code,
+            max_stack,
+            max_locals,
         }
     }
 
